@@ -1,0 +1,100 @@
+/* Container styles */
+#theForm, #theList {
+  max-width: 700px;
+  margin: 30px auto;
+  padding: 24px;
+  background-color: #fdfdfd;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+}
+
+/* Form title */
+h2 {
+  text-align: center;
+  font-size: 1.6rem;
+  margin-bottom: 1.5rem;
+  color: #333;
+}
+
+/* Form group spacing */
+.form-group {
+  margin-bottom: 1.2rem;
+}
+
+/* Labels */
+label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #444;
+}
+
+/* Inputs */
+input[type="text"],
+input[type="date"],
+input[type="time"],
+input[type="number"] {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  transition: border-color 0.3s ease;
+}
+
+input:focus {
+  border-color: #5b9bd5;
+  outline: none;
+}
+
+/* Error messages */
+.help-block.danger {
+  color: #d9534f;
+  font-size: 0.9rem;
+  margin-top: 0.3rem;
+}
+
+/* Submit button */
+button {
+  display: block;
+  width: 100%;
+  background-color: #5cb85c;
+  color: white;
+  padding: 10px 0;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover:enabled {
+  background-color: #4cae4c;
+}
+
+button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+/* Reservation list styling */
+#theList .row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+#theList input[type="text"] {
+  width: 100%;
+  font-size: 0.95rem;
+}
+
+/* Image styling */
+#theList img {
+  border-radius: 8px;
+  border: 2px solid #ddd;
+  object-fit: cover;
+}
