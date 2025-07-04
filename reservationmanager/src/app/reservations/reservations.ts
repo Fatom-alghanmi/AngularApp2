@@ -1,43 +1,70 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { NgForm, FormsModule } from '@angular/forms';
-import { ReservationsService } from './reservations.service';
+import { ReservationsService, Reservation } from './reservations.service';
 
 @Component({
-  selector: 'app-reservations',
   standalone: true,
-  imports: [CommonModule, FormsModule], // ✅ THIS is the critical fix
+  selector: 'app-reservations',
   templateUrl: './reservations.html',
-  styleUrls: ['./reservations.css']
+  styleUrls: ['./reservations.css'],
+  imports: [CommonModule, FormsModule],
 })
 export class ReservationsComponent implements OnInit {
-  reservation = {
-    name: '',
-    date: '',
-    time: '',
-    guests: 1,
-    location: ''
-  };
+  reservations: Reservation[] = [];
+  newReservation: Partial<Reservation> = {};
+  showAddForm = false;
+  selectedFile: File | null = null;
+  locations: string[] = ['Maple Park', 'Pine Woods', 'River Valley', 'Central Park'];
 
-  reservations: any[] = [];
-
-  constructor(private reservationService: ReservationsService) {}
+  constructor(
+    private reservationService: ReservationsService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
-    this.loadReservations();
+    this.getReservations();
   }
 
-  loadReservations() {
-    this.reservationService.getReservations().subscribe(res => {
-      this.reservations = res.data;
+  getReservations(): void {
+    this.reservationService.getReservations().subscribe({
+      next: (res) => {
+        this.reservations = res.data;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error loading reservations:', err);
+      },
     });
   }
 
-  addReservation(form: NgForm) {
+  onFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.selectedFile = input.files[0];
+    }
+  }
+
+  addReservation(form: any) {
     if (form.valid) {
-      this.reservationService.addReservation(this.reservation).subscribe(() => {
-        this.loadReservations(); // Refresh list
-        form.resetForm(); // Clear form
+      const formData = new FormData();
+      formData.append('name', this.newReservation.name!);
+      formData.append('date', this.newReservation.date!);
+      formData.append('time', this.newReservation.time!);
+      formData.append('guests', this.newReservation.guests!.toString());
+      formData.append('location', this.newReservation.location!);
+      if (this.selectedFile) {
+        formData.append('image', this.selectedFile);
+      }
+
+      this.reservationService.addReservationWithImage(formData).subscribe({
+        next: () => {
+          this.showAddForm = false;
+          this.newReservation = {};
+          this.selectedFile = null;
+          this.getReservations();
+        },
+        error: (err) => console.error('Add failed:', err),
       });
     }
   }

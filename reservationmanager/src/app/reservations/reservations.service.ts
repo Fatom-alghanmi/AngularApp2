@@ -8,6 +8,9 @@ export interface Reservation {
   date: string;
   time: string;
   guests: number;
+  location: string;
+  imageName?: string;
+   
 }
 
 @Injectable({
@@ -26,5 +29,10 @@ export interface Reservation {
     addReservation(data: Omit<Reservation, 'id'>): Observable<any> {
       return this.http.post<any>(this.addUrl, data);
     }
+
+    addReservationWithImage(data: FormData): Observable<any> {
+      return this.http.post(this.addUrl, data);
+    }
+    
   }
   

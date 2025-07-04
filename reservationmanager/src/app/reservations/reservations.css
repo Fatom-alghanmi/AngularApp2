@@ -1,100 +1,91 @@
-/* Container styles */
-#theForm, #theList {
+#reservationList {
   max-width: 700px;
-  margin: 30px auto;
-  padding: 24px;
-  background-color: #fdfdfd;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  border-radius: 12px;
+  margin: 20px auto;
+  padding: 20px;
+  
+  /* Background image with some transparency */
+
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  border-radius: 10px;
+  
+  /* Add a subtle semi-transparent white overlay for better readability */
+  position: relative;
+  color: #070708;
 }
 
-/* Form title */
+.reservation-image {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+
+#reservationList::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.85); /* white with 85% opacity */
+  border-radius: 10px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+#reservationList > * {
+  position: relative;
+  z-index: 1; /* keep content above overlay */
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 2px solid #2980b9; /* outer border */
+  border-radius: 10px;
+  overflow: hidden; /* round corners on the table */
+}
+
+th, td {
+  padding: 10px;
+  border: 1px solid #2980b9; /* visible inner borders */
+  background: #bbd8dc;
+  text-align: left;
+  border-bottom: #222;
+  vertical-align: middle;
+}
+
+th {
+  background-color: #99e0f6;
+  color: rgb(127, 28, 28);
+  font-weight: 600;
+}
+
+.reservation-box {
+  background: #3dd3ed;
+}
+
 h2 {
   text-align: center;
-  font-size: 1.6rem;
-  margin-bottom: 1.5rem;
-  color: #333;
+  margin-bottom: 20px;
+  font-weight: 700;
+  color: #1c3d72;
 }
 
-/* Form group spacing */
-.form-group {
-  margin-bottom: 1.2rem;
-}
-
-/* Labels */
-label {
+.btn {
   display: block;
-  margin-bottom: 0.5rem;
-  font-weight: 600;
-  color: #444;
-}
-
-/* Inputs */
-input[type="text"],
-input[type="date"],
-input[type="time"],
-input[type="number"] {
-  width: 100%;
-  padding: 10px 12px;
-  font-size: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  transition: border-color 0.3s ease;
-}
-
-input:focus {
-  border-color: #5b9bd5;
-  outline: none;
-}
-
-/* Error messages */
-.help-block.danger {
-  color: #d9534f;
-  font-size: 0.9rem;
-  margin-top: 0.3rem;
-}
-
-/* Submit button */
-button {
-  display: block;
-  width: 100%;
-  background-color: #5cb85c;
+  margin: 20px auto 0;
+  background: #2980b9;
   color: white;
-  padding: 10px 0;
   border: none;
-  border-radius: 6px;
+  padding: 8px 18px;
   font-size: 1rem;
-  font-weight: 600;
+  border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
 
-button:hover:enabled {
-  background-color: #4cae4c;
-}
-
-button:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
-}
-
-/* Reservation list styling */
-#theList .row {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  margin-bottom: 12px;
-  flex-wrap: wrap;
-}
-
-#theList input[type="text"] {
-  width: 100%;
-  font-size: 0.95rem;
-}
-
-/* Image styling */
-#theList img {
-  border-radius: 8px;
-  border: 2px solid #ddd;
-  object-fit: cover;
+.btn:hover {
+  background-color: #1c3d72;
 }
