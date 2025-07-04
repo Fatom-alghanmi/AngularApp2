@@ -34,5 +34,9 @@ export interface Reservation {
       return this.http.post(this.addUrl, data);
     }
     
+    updateReservationWithImage(formData: FormData) {
+      return this.http.post<any>('http://localhost/angularapp2/reservationapi/edit.php', formData);
+    }
+    
   }
   

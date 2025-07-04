@@ -15,6 +15,9 @@ export class ReservationsComponent implements OnInit {
   newReservation: Partial<Reservation> = {};
   showAddForm = false;
   selectedFile: File | null = null;
+  editableValue: string = '';
+  editing: { [key: string]: boolean } = {};
+
   locations: string[] = ['Maple Park', 'Pine Woods', 'River Valley', 'Central Park'];
 
   constructor(
@@ -67,5 +70,28 @@ export class ReservationsComponent implements OnInit {
         error: (err) => console.error('Add failed:', err),
       });
     }
+  }
+
+  isEditing(item: any, field: string): boolean {
+    return this.editing[`${item.reservationID}_${field}`] === true;
+  }
+
+  startEdit(item: any, field: string) {
+    this.editing = {}; // allow only one field editing at a time
+    this.editing[`${item.reservationID}_${field}`] = true;
+    this.editableValue = item[field];
+  }
+
+  saveEdit(item: any, field: string) {
+    item[field] = this.editableValue;
+    this.editing[`${item.reservationID}_${field}`] = false;
+
+    const formData = new FormData();
+    formData.append('id', item.reservationID); // assuming your ID column is reservationID
+    formData.append(field, item[field]);
+
+    this.reservationService.updateReservationWithImage(formData).subscribe(() => {
+      this.getReservations();
+    });
   }
 }
