@@ -1,4 +1,52 @@
 <div class="container mt-4">
+
+  <!-- Success message -->
+  <div *ngIf="success" class="alert alert-success" role="alert" style="max-width: 700px; margin: 10px auto;">
+    {{ success }}
+  </div>
+
+  <!-- ADD FORM (Moved to top) -->
+  <div class="container mt-5 p-4 border rounded bg-light" style="max-width: 700px; margin: 10px auto;">
+    <h3 class="mb-4">Add New Reservation</h3>
+
+    <form #f="ngForm" (submit)="addReservation(f)" class="row g-3">
+      <div class="col-md-6">
+        <label for="name" class="form-label">Full Name</label>
+        <input id="name" type="text" name="name" [(ngModel)]="newReservation.name" required class="form-control" />
+      </div>
+
+      <div class="col-md-3">
+        <label for="date" class="form-label">Date</label>
+        <input id="date" type="date" name="date" [(ngModel)]="newReservation.date" required class="form-control" />
+      </div>
+
+      <div class="col-md-3">
+        <label for="time" class="form-label">Time</label>
+        <input id="time" type="time" name="time" [(ngModel)]="newReservation.time" required class="form-control" />
+      </div>
+
+      <div class="col-md-3">
+        <label for="guests" class="form-label">Number of Guests</label>
+        <input id="guests" type="number" name="guests" [(ngModel)]="newReservation.guests" required min="1" class="form-control" />
+      </div>
+
+      <div class="col-md-6">
+        <label for="location" class="form-label">Location</label>
+        <input id="location" type="text" name="location" [(ngModel)]="newReservation.location" required class="form-control" />
+      </div>
+
+      <div class="col-md-6">
+        <label for="image" class="form-label">Upload Image</label>
+        <input type="file" name="image" class="form-control" (change)="onFileSelected($event)" accept="image/*" />
+      </div>
+
+      <div class="col-12">
+        <button [disabled]="f.invalid" class="btn btn-success">Submit Reservation</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Reservation List -->
   <h2 class="mb-3">Reservation List</h2>
 
   <table class="table table-bordered table-striped" *ngIf="reservations.length > 0; else noData">
@@ -9,43 +57,65 @@
         <th>Time</th>
         <th>Guests</th>
         <th>Location</th>
+        <th>Booked</th>
         <th>Image</th>
+        <th>Actions</th>
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let item of reservations">
-
-        <td (click)="startEdit(item, 'name')" *ngIf="!isEditing(item, 'name')">{{ item.name }}</td>
-        <td *ngIf="isEditing(item, 'name')">
-          <input [(ngModel)]="editableValue" (blur)="saveEdit(item, 'name')" (keydown.enter)="saveEdit(item, 'name')" class="form-control" autofocus />
-        </td>
-
-        <td (click)="startEdit(item, 'date')" *ngIf="!isEditing(item, 'date')">{{ item.date }}</td>
-        <td *ngIf="isEditing(item, 'date')">
-          <input type="date" [(ngModel)]="editableValue" (blur)="saveEdit(item, 'date')" (keydown.enter)="saveEdit(item, 'date')" class="form-control" autofocus />
-        </td>
-
-        <td (click)="startEdit(item, 'time')" *ngIf="!isEditing(item, 'time')">{{ item.time }}</td>
-        <td *ngIf="isEditing(item, 'time')">
-          <input type="time" [(ngModel)]="editableValue" (blur)="saveEdit(item, 'time')" (keydown.enter)="saveEdit(item, 'time')" class="form-control" autofocus />
-        </td>
-
-        <td (click)="startEdit(item, 'guests')" *ngIf="!isEditing(item, 'guests')">{{ item.guests }}</td>
-        <td *ngIf="isEditing(item, 'guests')">
-          <input type="number" [(ngModel)]="editableValue" (blur)="saveEdit(item, 'guests')" (keydown.enter)="saveEdit(item, 'guests')" class="form-control" autofocus />
-        </td>
-
-        <td (click)="startEdit(item, 'location')" *ngIf="!isEditing(item, 'location')">{{ item.location }}</td>
-        <td *ngIf="isEditing(item, 'location')">
-          <select [(ngModel)]="editableValue" (blur)="saveEdit(item, 'location')" class="form-select" autofocus>
-            <option *ngFor="let loc of locations" [value]="loc">{{ loc }}</option>
-          </select>
-        </td>
-
+        <!-- Name -->
         <td>
-          <img *ngIf="item.imageName" [src]="'http://localhost/angularapp2/reservationapi/uploads/' + item.imageName" width="60" />
+          <input *ngIf="editingId === item.id" [(ngModel)]="item.name" class="inline-input" type="text" />
+          <span *ngIf="editingId !== item.id">{{ item.name }}</span>
         </td>
 
+        <!-- Date -->
+        <td>
+          <input *ngIf="editingId === item.id" [(ngModel)]="item.date" class="inline-input" type="date" />
+          <span *ngIf="editingId !== item.id">{{ item.date }}</span>
+        </td>
+
+        <!-- Time -->
+        <td>
+          <input *ngIf="editingId === item.id" [(ngModel)]="item.time" class="inline-input" type="time" />
+          <span *ngIf="editingId !== item.id">{{ item.time }}</span>
+        </td>
+
+        <!-- Guests -->
+        <td>
+          <input *ngIf="editingId === item.id" [(ngModel)]="item.guests" class="inline-input" type="number" />
+          <span *ngIf="editingId !== item.id">{{ item.guests }}</span>
+        </td>
+
+        <!-- Location -->
+        <td>
+          <input *ngIf="editingId === item.id" [(ngModel)]="item.location" class="inline-input" type="text" />
+          <span *ngIf="editingId !== item.id">{{ item.location }}</span>
+        </td>
+
+        <!-- Booked -->
+        <td>
+          <input type="checkbox"
+                 [checked]="item.booked === 1"
+                 (change)="toggleBooked(item)"
+                 [disabled]="editingId !== item.id" />
+        </td>
+
+        <!-- Image -->
+        <td>
+          <img *ngIf="item.imageName"
+               [src]="'http://localhost/angularapp2/reservationapi/uploads/' + item.imageName"
+               class="reservation-image"
+               alt="Reservation Image" />
+        </td>
+
+        <!-- Actions -->
+        <td class="actions">
+          <button *ngIf="editingId !== item.id" (click)="startEditRow(item.id)" class="btn btn-primary btn-sm">Edit</button>
+          <button *ngIf="editingId === item.id" (click)="saveRow(item)" class="btn btn-success btn-sm">Save</button>
+          <button (click)="deleteReservation(item.id)" class="btn btn-danger btn-sm">Delete</button>
+        </td>
       </tr>
     </tbody>
   </table>
@@ -54,54 +124,4 @@
     <p>No reservations found.</p>
   </ng-template>
 
-  <button class="btn btn-primary btn-sm mt-3" (click)="showAddForm = true">
-    Add Reservation
-  </button>
-</div>
-
-<!-- ADD FORM -->
-<div *ngIf="showAddForm" class="container mt-5 p-4 border rounded bg-light">
-  <h3 class="mb-4">Add New Reservation</h3>
-
-  <form #f="ngForm" (submit)="addReservation(f)" class="row g-3">
-
-    <div class="col-md-6">
-      <label for="name" class="form-label">Full Name</label>
-      <input id="name" type="text" name="name" [(ngModel)]="newReservation.name" required class="form-control" placeholder="Enter full name" />
-    </div>
-
-    <div class="col-md-3">
-      <label for="date" class="form-label">Date</label>
-      <input id="date" type="date" name="date" [(ngModel)]="newReservation.date" required class="form-control" />
-    </div>
-
-    <div class="col-md-3">
-      <label for="time" class="form-label">Time</label>
-      <input id="time" type="time" name="time" [(ngModel)]="newReservation.time" required class="form-control" />
-    </div>
-
-    <div class="col-md-3">
-      <label for="guests" class="form-label">Number of Guests</label>
-      <input id="guests" type="number" name="guests" [(ngModel)]="newReservation.guests" required min="1" class="form-control" placeholder="e.g. 2" />
-    </div>
-
-    <div class="col-md-6">
-      <label for="location" class="form-label">Location</label>
-      <select id="location" name="location" [(ngModel)]="newReservation.location" required class="form-select">
-        <option value="" disabled selected>Select a location</option>
-        <option *ngFor="let loc of locations" [value]="loc">{{ loc }}</option>
-      </select>
-    </div>
-
-    <div class="col-md-6">
-      <label for="image" class="form-label">Upload Image</label>
-      <input type="file" name="image" class="form-control" (change)="onFileSelected($event)" accept="image/*" />
-    </div>
-
-    <div class="col-12">
-      <button [disabled]="f.invalid" class="btn btn-success">Submit Reservation</button>
-      <button type="button" class="btn btn-secondary ms-2" (click)="showAddForm = false">Cancel</button>
-    </div>
-
-  </form>
 </div>

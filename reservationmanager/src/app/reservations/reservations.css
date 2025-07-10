@@ -1,91 +1,143 @@
-#reservationList {
-  max-width: 700px;
-  margin: 20px auto;
-  padding: 20px;
-  
-  /* Background image with some transparency */
-
-  background-size: cover;
-  background-position: center center;
-  background-repeat: no-repeat;
-  border-radius: 10px;
-  
-  /* Add a subtle semi-transparent white overlay for better readability */
-  position: relative;
-  color: #070708;
-}
-
-.reservation-image {
-  width: 50px;
-  height: 50px;
-  object-fit: cover;
+/* General container */
+.container {
+  padding: 10px;
+  border: 2px solid black;
+  margin: 10px auto;
+  max-width: 1800px;
+  background-color: #f9f9f9;
   border-radius: 6px;
-  border: 1px solid #ccc;
 }
 
-
-#reservationList::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: rgba(255, 255, 255, 0.85); /* white with 85% opacity */
-  border-radius: 10px;
-  pointer-events: none;
-  z-index: 0;
+/* Headings */
+h2, h3 {
+  text-align: center;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #1a3a6c;
 }
 
-#reservationList > * {
-  position: relative;
-  z-index: 1; /* keep content above overlay */
-}
-
+/* Table styling */
 table {
   width: 100%;
   border-collapse: collapse;
-  border: 2px solid #2980b9; /* outer border */
-  border-radius: 10px;
-  overflow: hidden; /* round corners on the table */
+  margin-top: 20px;
+  border: 2px solid #444;
 }
 
 th, td {
   padding: 10px;
-  border: 1px solid #2980b9; /* visible inner borders */
-  background: #bbd8dc;
-  text-align: left;
-  border-bottom: #222;
+  border: 1px solid #999;
+  text-align: center;
   vertical-align: middle;
+  background-color: #e9f7fc;
+}
+
+/* Optional: Make table cells wider to avoid input squashing */
+td {
+  min-width: 140px;
 }
 
 th {
-  background-color: #99e0f6;
-  color: rgb(127, 28, 28);
+  background-color: #cce0f0;
+  color: #333;
   font-weight: 600;
 }
 
-.reservation-box {
-  background: #3dd3ed;
+/* Input fields inside table cells during editing */
+td input[type="text"].inline-input,
+td input[type="date"].inline-input,
+td input[type="time"].inline-input,
+td input[type="number"].inline-input {
+  width: 100%;
+  min-width: 120px;
+  padding: 6px 10px;
+  font-size: 14px;
+  box-sizing: border-box;
 }
 
-h2 {
-  text-align: center;
+/* Image */
+.reservation-image {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 4px;
+  border: 1px solid #888;
+}
+
+/* Form and list sections */
+#theForm, #theList {
+  padding: 10px;
+  border: 1px solid #ddd;
   margin-bottom: 20px;
-  font-weight: 700;
-  color: #1c3d72;
 }
 
-.btn {
+/* Form inputs */
+input[type="text"],
+input[type="date"],
+input[type="time"],
+input[type="number"],
+input[type="file"],
+select {
+  width: 30%;
+  padding: 10px;
+  margin: 5px 0 20px 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  display: inline-block;
+  box-sizing: border-box;
+}
+
+/* Labels */
+label {
+  width: 100%;
   display: block;
-  margin: 20px auto 0;
-  background: #2980b9;
+  font-weight: 500;
+  margin-bottom: 5px;
+}
+
+/* General buttons */
+button.btn {
+  width: 20%;
+  min-width: 120px;
+  margin: 10px;
+  padding: 12px 18px;
+  background-color: #2980b9;
   color: white;
   border: none;
-  padding: 8px 18px;
-  font-size: 1rem;
-  border-radius: 5px;
+  border-radius: 4px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
 }
 
-.btn:hover {
-  background-color: #1c3d72;
+button.btn:hover {
+  background-color: #1a5276;
+}
+
+/* Table action buttons (Edit/Delete/Save) */
+.actions button {
+  padding: 8px 14px;
+  margin: 0 5px;
+  min-width: 80px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  background-color: #3498db;
+  color: white;
+}
+
+.actions button:hover {
+  background-color: #2c80b4;
+}
+
+/* Action cell flexbox */
+.actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Submit area */
+.form-footer {
+  text-align: center;
+  margin-top: 20px;
 }

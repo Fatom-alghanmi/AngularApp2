@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
-import { ReservationsComponent } from './reservations/reservations';
+import { Reservations } from './reservations/reservations';
 import { HttpClientModule } from '@angular/common/http';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [ReservationsComponent, HttpClientModule],
+  imports: [Reservations, HttpClientModule],
   template: `<app-reservations></app-reservations>`,
 })
 export class App {

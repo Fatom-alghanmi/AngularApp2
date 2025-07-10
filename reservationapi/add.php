@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-// Check if it's a POST request with form-data
+// Only accept POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
     echo json_encode(['error' => 'Only POST allowed']);
@@ -28,9 +28,10 @@ $date = $_POST['date'] ?? '';
 $time = $_POST['time'] ?? '';
 $guests = isset($_POST['guests']) ? (int)$_POST['guests'] : 0;
 $location = $_POST['location'] ?? '';
-$imageName = 'placeholder.jpg';
+$booked = isset($_POST['booked']) ? (int)$_POST['booked'] : 0;
+$imageName = 'placeholder_100.jpg';  // default placeholder
 
-// Validate inputs
+// Validate required fields
 if (!$name || !$date || !$time || !$guests || !$location) {
     http_response_code(400);
     echo json_encode(['error' => 'Missing required fields']);
@@ -52,15 +53,27 @@ if (isset($_FILES['image']) && $_FILES['image']['error'] === 0) {
 }
 
 // Insert into database
-$sql = "INSERT INTO reservations (name, date, time, guests, location, imageName)
-        VALUES (?, ?, ?, ?, ?, ?)";
+$sql = "INSERT INTO reservations (name, date, time, guests, location, imageName, booked)
+        VALUES (?, ?, ?, ?, ?, ?, ?)";
 
 $stmt = $con->prepare($sql);
-$stmt->bind_param("sssiss", $name, $date, $time, $guests, $location, $imageName);
+$stmt->bind_param("sssissi", $name, $date, $time, $guests, $location, $imageName, $booked);
 
 if ($stmt->execute()) {
-    echo json_encode(['message' => 'Reservation added successfully']);
+    $insertedId = $stmt->insert_id;
+    echo json_encode([
+        'message' => 'Reservation added successfully',
+        'id' => $insertedId,
+        'name' => $name,
+        'date' => $date,
+        'time' => $time,
+        'guests' => $guests,
+        'location' => $location,
+        'imageName' => $imageName,
+        'booked' => $booked
+    ]);
 } else {
     http_response_code(500);
     echo json_encode(['error' => $stmt->error]);
 }
+?>

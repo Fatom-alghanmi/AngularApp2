@@ -10,33 +10,41 @@ export interface Reservation {
   guests: number;
   location: string;
   imageName?: string;
-   
+  booked: number;
 }
 
 @Injectable({
-    providedIn: 'root'
-  })
-  export class ReservationsService {
-    private listUrl = 'http://localhost/AngularApp2/reservationapi/list.php';
-    private addUrl = 'http://localhost/AngularApp2/reservationapi/add.php';
-  
-    constructor(private http: HttpClient) {}
-  
-    getReservations(): Observable<{ data: Reservation[] }> {
-      return this.http.get<{ data: Reservation[] }>(this.listUrl);
-    }
-  
-    addReservation(data: Omit<Reservation, 'id'>): Observable<any> {
-      return this.http.post<any>(this.addUrl, data);
-    }
+  providedIn: 'root'
+})
+export class ReservationsService {
+  private listUrl = 'http://localhost/AngularApp2/reservationapi/list.php';
+  private addUrl = 'http://localhost/AngularApp2/reservationapi/add.php';
+  private editUrl = 'http://localhost/AngularApp2/reservationapi/edit.php';
+  private deleteUrl = 'http://localhost/AngularApp2/reservationapi/delete.php';
 
-    addReservationWithImage(data: FormData): Observable<any> {
-      return this.http.post(this.addUrl, data);
-    }
-    
-    updateReservationWithImage(formData: FormData) {
-      return this.http.post<any>('http://localhost/angularapp2/reservationapi/edit.php', formData);
-    }
-    
+  constructor(private http: HttpClient) {}
+
+  getReservations(): Observable<{ data: Reservation[] }> {
+    return this.http.get<{ data: Reservation[] }>(this.listUrl);
   }
+
+  addReservationWithImage(formData: FormData): Observable<any> {
+    return this.http.post(this.addUrl, formData);
+  }
+
+  updateReservationField(id: number, field: string, value: string | number | boolean): Observable<any> {
+    const formData = new FormData();
+    formData.append('id', id.toString());
+    formData.append('field', field);
+    formData.append('value', value.toString());
+    return this.http.post(this.editUrl, formData);
+  }
+
+  deleteReservation(id: number): Observable<any> {
+    const formData = new FormData();
+    formData.append('id', id.toString());
+    return this.http.post(this.deleteUrl, formData);
+  }
+
   
+}
