@@ -1,0 +1,121 @@
+<div class="container">
+  <h2>Add New Reservation</h2>
+  
+  <form #f="ngForm" (ngSubmit)="addReservation(f)" novalidate>
+    
+    <div class="form-group mb-3">
+      <label for="name">Name</label>
+      <input
+        id="name"
+        type="text"
+        name="name"
+        class="form-control"
+        [(ngModel)]="reservation.name"
+        required
+        #nameModel="ngModel"
+        placeholder="Enter full name"
+      />
+      <div *ngIf="nameModel.invalid && nameModel.touched" class="text-danger">
+        Name is required.
+      </div>
+    </div>
+
+    <div class="form-group mb-3">
+      <label for="date">Date</label>
+      <input
+        id="date"
+        type="date"
+        name="date"
+        class="form-control"
+        [(ngModel)]="reservation.date"
+        required
+        #dateModel="ngModel"
+      />
+      <div *ngIf="dateModel.invalid && dateModel.touched" class="text-danger">
+        Date is required.
+      </div>
+    </div>
+
+    <div class="form-group mb-3">
+      <label for="time">Time</label>
+      <input
+        id="time"
+        type="time"
+        name="time"
+        class="form-control"
+        [(ngModel)]="reservation.time"
+        required
+        #timeModel="ngModel"
+      />
+      <div *ngIf="timeModel.invalid && timeModel.touched" class="text-danger">
+        Time is required.
+      </div>
+    </div>
+
+    <div class="form-group mb-3">
+      <label for="guests">Guests</label>
+      <input
+        id="guests"
+        type="number"
+        name="guests"
+        class="form-control"
+        [(ngModel)]="reservation.guests"
+        required
+        min="1"
+        #guestsModel="ngModel"
+      />
+      <div *ngIf="guestsModel.invalid && guestsModel.touched" class="text-danger">
+        Please enter the number of guests.
+      </div>
+    </div>
+
+    <div class="form-group mb-3">
+      <label for="location">Location</label>
+      <input
+        id="location"
+        type="text"
+        name="location"
+        class="form-control"
+        [(ngModel)]="reservation.location"
+        placeholder="Enter location"
+        required
+        #locationModel="ngModel"
+      />
+      <div *ngIf="locationModel.invalid && locationModel.touched" class="text-danger">
+        Location is required.
+      </div>
+    </div>
+
+    <div class="form-group mb-3">
+      <label for="image">Upload Image</label>
+      <input
+        id="image"
+        type="file"
+        (change)="onFileSelected($event)"
+        class="form-control"
+        accept="image/*"
+      />
+    </div>
+
+    <button
+  type="submit"
+  class="btn btn-primary"
+  [disabled]="f.invalid"
+>
+  Add Reservation
+</button>
+
+    <button
+      type="button"
+      class="btn btn-secondary ms-2"
+      (click)="cancel()"
+    >
+      Cancel
+    </button>
+
+  </form>
+
+  <!-- Messages -->
+  <div *ngIf="success" class="alert alert-success mt-3">{{ success }}</div>
+  <div *ngIf="error" class="alert alert-danger mt-3">{{ error }}</div>
+</div>

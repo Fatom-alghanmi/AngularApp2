@@ -1,14 +1,16 @@
 import { Component } from '@angular/core';
-import { Reservations } from './reservations/reservations';
+import { RouterModule } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [Reservations, HttpClientModule],
-  template: `<app-reservations></app-reservations>`,
+  imports: [RouterModule, HttpClientModule],
+  templateUrl: './app.html',
+  styleUrls: ['./app.css'],
 })
-export class App {
+  
 
+export class App {
   protected title = 'reservationmanager';
 }

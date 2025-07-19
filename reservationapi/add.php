@@ -1,13 +1,12 @@
 <?php
-require 'connect.php';
+//header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: POST, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type');
+header('Content-Type: application/json');
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
-// CORS headers
-header("Access-Control-Allow-Origin: http://localhost:4200");
-header("Access-Control-Allow-Methods: POST, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type");
-header("Content-Type: application/json");
+require 'connect.php';
 
 // Handle preflight OPTIONS request
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
@@ -38,39 +37,60 @@ if (!$name || !$date || !$time || !$guests || !$location) {
     exit;
 }
 
-// Handle image upload if present
+// Prevent Duplicate Reservation (same name, date, time, guests)
+$checkSql = "SELECT id FROM reservations WHERE name = ? AND date = ? AND time = ? AND guests = ? LIMIT 1";
+$checkStmt = $con->prepare($checkSql);
+$checkStmt->bind_param("sssi", $name, $date, $time, $guests);
+$checkStmt->execute();
+$checkStmt->store_result();
+if ($checkStmt->num_rows > 0) {
+    http_response_code(409);
+    echo json_encode(['error' => 'Duplicate reservation detected.']);
+    exit;
+}
+$checkStmt->close();
+
+// Handle image upload
 if (isset($_FILES['image']) && $_FILES['image']['error'] === 0) {
     $uploadDir = __DIR__ . '/uploads/';
-    $ext = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
-    $imageName = uniqid('img_') . '.' . $ext;
-    $uploadPath = $uploadDir . $imageName;
+    $originalImageName = basename($_FILES['image']['name']);
 
-    if (!move_uploaded_file($_FILES['image']['tmp_name'], $uploadPath)) {
+    if ($originalImageName !== 'placeholder_100.jpg') {
+        // Prevent duplicate image by original filename
+        $stmt = $con->prepare("SELECT id FROM reservations WHERE imageName = ? LIMIT 1");
+        $stmt->bind_param('s', $originalImageName);
+        $stmt->execute();
+        $stmt->store_result();
+        if ($stmt->num_rows > 0) {
+            http_response_code(409);
+            echo json_encode(['error' => 'Duplicate image name detected.']);
+            exit;
+        }
+        $stmt->close();
+    }
+
+    // Save image using original filename
+    $imagePath = $uploadDir . $originalImageName;
+    if (move_uploaded_file($_FILES['image']['tmp_name'], $imagePath)) {
+        $imageName = $originalImageName;
+    } else {
         http_response_code(500);
-        echo json_encode(['error' => 'Failed to save image']);
+        echo json_encode(['error' => 'Failed to save image.']);
         exit;
     }
 }
 
-// Insert into database
+// Insert reservation
 $sql = "INSERT INTO reservations (name, date, time, guests, location, imageName, booked)
         VALUES (?, ?, ?, ?, ?, ?, ?)";
-
 $stmt = $con->prepare($sql);
 $stmt->bind_param("sssissi", $name, $date, $time, $guests, $location, $imageName, $booked);
 
 if ($stmt->execute()) {
-    $insertedId = $stmt->insert_id;
     echo json_encode([
         'message' => 'Reservation added successfully',
-        'id' => $insertedId,
-        'name' => $name,
-        'date' => $date,
-        'time' => $time,
-        'guests' => $guests,
-        'location' => $location,
-        'imageName' => $imageName,
-        'booked' => $booked
+        'id' => $stmt->insert_id,
+        'imageName' => $imageName
     ]);
 } else {
     http_response_code(500);

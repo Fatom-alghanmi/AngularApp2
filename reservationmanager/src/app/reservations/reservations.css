@@ -1,143 +1,113 @@
-/* General container */
-.container {
-  padding: 10px;
-  border: 2px solid black;
-  margin: 10px auto;
-  max-width: 1800px;
-  background-color: #f9f9f9;
-  border-radius: 6px;
+/* Table Wrapper */
+.table-container {
+  overflow-x: auto;
+  margin: 20px 0;
 }
 
-/* Headings */
-h2, h3 {
-  text-align: center;
-  font-weight: bold;
-  margin-bottom: 20px;
-  color: #1a3a6c;
-}
-
-/* Table styling */
+/* Table Styling */
 table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 20px;
-  border: 2px solid #444;
+  border: 2px solid #333;
+  min-width: 800px;
 }
 
-th, td {
-  padding: 10px;
-  border: 1px solid #999;
-  text-align: center;
-  vertical-align: middle;
-  background-color: #e9f7fc;
+.button-container {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-bottom: 15px;
 }
 
-/* Optional: Make table cells wider to avoid input squashing */
-td {
-  min-width: 140px;
+.button-container button {
+  background: #2f5973;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
 }
 
+.button-container button:hover {
+  background-color: #218838;
+}
+
+/* Table Headers */
 th {
   background-color: #cce0f0;
-  color: #333;
-  font-weight: 600;
+  color: #222;
+  font-weight: bold;
+  text-align: center;
+  padding: 12px 8px;
+  border: 1px solid #999;
 }
 
-/* Input fields inside table cells during editing */
-td input[type="text"].inline-input,
-td input[type="date"].inline-input,
-td input[type="time"].inline-input,
-td input[type="number"].inline-input {
-  width: 100%;
+/* Table Cells */
+td {
+  text-align: center;
+  vertical-align: middle;
+  padding: 10px 8px;
+  border: 1px solid #aaa;
+  background-color: #f9f9f9;
   min-width: 120px;
-  padding: 6px 10px;
-  font-size: 14px;
-  box-sizing: border-box;
 }
 
-/* Image */
-.reservation-image {
-  width: 50px;
-  height: 50px;
+/* Images inside table */
+td img {
+  width: 60px;
+  height: 60px;
   object-fit: cover;
   border-radius: 4px;
   border: 1px solid #888;
 }
 
-/* Form and list sections */
-#theForm, #theList {
-  padding: 10px;
-  border: 1px solid #ddd;
-  margin-bottom: 20px;
-}
-
-/* Form inputs */
-input[type="text"],
-input[type="date"],
-input[type="time"],
-input[type="number"],
-input[type="file"],
-select {
-  width: 30%;
-  padding: 10px;
-  margin: 5px 0 20px 0;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  display: inline-block;
-  box-sizing: border-box;
-}
-
-/* Labels */
-label {
-  width: 100%;
-  display: block;
-  font-weight: 500;
-  margin-bottom: 5px;
-}
-
-/* General buttons */
-button.btn {
-  width: 20%;
-  min-width: 120px;
-  margin: 10px;
-  padding: 12px 18px;
-  background-color: #2980b9;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-button.btn:hover {
-  background-color: #1a5276;
-}
-
-/* Table action buttons (Edit/Delete/Save) */
-.actions button {
-  padding: 8px 14px;
-  margin: 0 5px;
-  min-width: 80px;
-  border-radius: 4px;
-  border: none;
-  cursor: pointer;
-  background-color: #3498db;
-  color: white;
-}
-
-.actions button:hover {
-  background-color: #2c80b4;
-}
-
-/* Action cell flexbox */
+/* Action buttons container */
 .actions {
   display: flex;
   justify-content: center;
-  align-items: center;
   gap: 10px;
+  flex-wrap: wrap;   /* Allow wrapping if buttons are too wide */
+  padding: 5px 0;
 }
 
-/* Submit area */
-.form-footer {
-  text-align: center;
-  margin-top: 20px;
+/* Buttons inside actions */
+.actions button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  font-size: 14px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.actions button:hover {
+  background-color: #0056b3;
+}
+
+
+/* Responsive input inside cells if needed */
+.inline-input {
+  width: 100%;
+  padding: 6px;
+  box-sizing: border-box;
+}
+
+/* Messages */
+.alert {
+  margin: 10px 0;
+  padding: 10px;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+.alert-success {
+  background-color: #e0f9e0;
+  color: #2b7b2b;
+}
+
+.alert-danger {
+  background-color: #fbeaea;
+  color: #c02626;
 }

@@ -1,0 +1,66 @@
+<div class="container">
+    <h2>Edit Reservation</h2>
+    <form #f="ngForm" (ngSubmit)="updateReservation(f)">
+  
+      <div class="form-group">
+        <label>Name</label>
+        <input type="text" name="name" class="form-control" [(ngModel)]="reservation.name" required>
+      </div>
+  
+      <div class="form-group">
+        <label>Date</label>
+        <input type="date" name="date" class="form-control" [(ngModel)]="reservation.date" required>
+      </div>
+  
+      <div class="form-group">
+        <label>Time</label>
+        <input type="time" name="time" class="form-control" [(ngModel)]="reservation.time" required>
+      </div>
+  
+      <div class="form-group">
+        <label>Guests</label>
+        <input type="number" name="guests" class="form-control" [(ngModel)]="reservation.guests" required min="1">
+      </div>
+  
+      <div class="form-group">
+        <label>Location</label>
+        <input type="text" name="location" class="form-control" [(ngModel)]="reservation.location" required>
+      </div>
+
+      <div class="form-group">
+        <label>Booked</label>
+        <input
+          type="checkbox"
+          name="booked"
+          [(ngModel)]="reservation.booked"
+          [ngModelOptions]="{standalone: true}"
+          (change)="reservation.booked = (reservation.booked ? 1 : 0)"
+        />
+      </div>
+      
+
+  
+      <div class="form-group">
+        <label>Current or New Image Preview</label><br>
+        <img
+          [src]="previewUrl ? previewUrl : 'http://localhost/angularapp2/reservationapi/uploads/' + reservation.imageName"
+          alt="Reservation Image"
+          width="100"
+          height="100"
+          class="mb-3 border rounded"
+        />
+      </div>
+  
+      <div class="form-group">
+        <label>Upload New Image</label>
+        <input type="file" name="image" class="form-control" (change)="onFileSelected($event)">
+      </div>
+  
+      <button type="submit" class="btn btn-primary" [disabled]="f.invalid">Update</button>
+      <button class="btn btn-secondary" routerLink="/reservations">Cancel</button>
+  
+      <div *ngIf="success" class="alert alert-success mt-3">{{ success }}</div>
+      <div *ngIf="error" class="alert alert-danger mt-3">{{ error }}</div>
+    </form>
+  </div>
+  

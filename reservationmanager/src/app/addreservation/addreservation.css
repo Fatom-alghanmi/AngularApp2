@@ -1,0 +1,80 @@
+/* Center the form container with some padding and subtle shadow */
+.container {
+    max-width: 600px;
+    margin: 30px auto;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: 0 0 8px rgba(0,0,0,0.1);
+  }
+  
+  /* Style form groups with spacing */
+  .form-group {
+    margin-bottom: 15px;
+  }
+  
+  /* Labels styling */
+  label {
+    font-weight: 600;
+    margin-bottom: 5px;
+    display: block;
+  }
+  button.btn.btn-secondary {
+    margin-top: 10px; /* Adds space above */
+  }
+  
+  /* Input and select styles */
+  input[type="text"],
+  input[type="date"],
+  input[type="time"],
+  input[type="number"],
+  select,
+  input[type="file"] {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 14px;
+  }
+  
+  /* Submit button */
+  button[type="submit"] {
+    width: 100%;
+    padding: 10px 0;
+    background-color: #28a745; /* Bootstrap green */
+    border: none;
+    border-radius: 4px;
+    color: white;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  button[type="submit"]:disabled {
+    background-color: #94d3a2;
+    cursor: not-allowed;
+  }
+  
+  button[type="submit"]:hover:not(:disabled) {
+    background-color: #218838;
+  }
+  
+  /* Success and error messages */
+  .alert {
+    margin-top: 15px;
+    padding: 12px;
+    border-radius: 4px;
+  }
+  
+  .alert-success {
+    background-color: #d4edda;
+    color: #155724;
+  }
+  
+  .alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+  }
+  

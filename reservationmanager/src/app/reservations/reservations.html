@@ -1,56 +1,15 @@
-<div class="container mt-4">
+<div class="button-container">
+  <button (click)="navigateToAbout()">About Us</button>
+  <button (click)="navigateToAdd()">Add Reservation</button>
+</div>
 
-  <!-- Success message -->
-  <div *ngIf="success" class="alert alert-success" role="alert" style="max-width: 700px; margin: 10px auto;">
-    {{ success }}
-  </div>
+<div class="table-container">
+  <!-- your table here -->
+</div>
 
-  <!-- ADD FORM (Moved to top) -->
-  <div class="container mt-5 p-4 border rounded bg-light" style="max-width: 700px; margin: 10px auto;">
-    <h3 class="mb-4">Add New Reservation</h3>
-
-    <form #f="ngForm" (submit)="addReservation(f)" class="row g-3">
-      <div class="col-md-6">
-        <label for="name" class="form-label">Full Name</label>
-        <input id="name" type="text" name="name" [(ngModel)]="newReservation.name" required class="form-control" />
-      </div>
-
-      <div class="col-md-3">
-        <label for="date" class="form-label">Date</label>
-        <input id="date" type="date" name="date" [(ngModel)]="newReservation.date" required class="form-control" />
-      </div>
-
-      <div class="col-md-3">
-        <label for="time" class="form-label">Time</label>
-        <input id="time" type="time" name="time" [(ngModel)]="newReservation.time" required class="form-control" />
-      </div>
-
-      <div class="col-md-3">
-        <label for="guests" class="form-label">Number of Guests</label>
-        <input id="guests" type="number" name="guests" [(ngModel)]="newReservation.guests" required min="1" class="form-control" />
-      </div>
-
-      <div class="col-md-6">
-        <label for="location" class="form-label">Location</label>
-        <input id="location" type="text" name="location" [(ngModel)]="newReservation.location" required class="form-control" />
-      </div>
-
-      <div class="col-md-6">
-        <label for="image" class="form-label">Upload Image</label>
-        <input type="file" name="image" class="form-control" (change)="onFileSelected($event)" accept="image/*" />
-      </div>
-
-      <div class="col-12">
-        <button [disabled]="f.invalid" class="btn btn-success">Submit Reservation</button>
-      </div>
-    </form>
-  </div>
-
-  <!-- Reservation List -->
-  <h2 class="mb-3">Reservation List</h2>
-
-  <table class="table table-bordered table-striped" *ngIf="reservations.length > 0; else noData">
-    <thead class="table-dark">
+<div class="table-container">
+  <table>
+    <thead>
       <tr>
         <th>Name</th>
         <th>Date</th>
@@ -64,64 +23,26 @@
     </thead>
     <tbody>
       <tr *ngFor="let item of reservations">
-        <!-- Name -->
+        <td>{{ item.name }}</td>
+        <td>{{ item.date }}</td>
+        <td>{{ item.time }}</td>
+        <td>{{ item.guests }}</td>
+        <td>{{ item.location }}</td>
         <td>
-          <input *ngIf="editingId === item.id" [(ngModel)]="item.name" class="inline-input" type="text" />
-          <span *ngIf="editingId !== item.id">{{ item.name }}</span>
+          <input
+            type="checkbox"
+            [checked]="item.booked == 1"
+            (change)="toggleBooked(item)"
+            />
         </td>
-
-        <!-- Date -->
         <td>
-          <input *ngIf="editingId === item.id" [(ngModel)]="item.date" class="inline-input" type="date" />
-          <span *ngIf="editingId !== item.id">{{ item.date }}</span>
+          <img [src]="'http://localhost/angularapp2/reservationapi/uploads/' + item.imageName" alt="Image" />
         </td>
-
-        <!-- Time -->
-        <td>
-          <input *ngIf="editingId === item.id" [(ngModel)]="item.time" class="inline-input" type="time" />
-          <span *ngIf="editingId !== item.id">{{ item.time }}</span>
-        </td>
-
-        <!-- Guests -->
-        <td>
-          <input *ngIf="editingId === item.id" [(ngModel)]="item.guests" class="inline-input" type="number" />
-          <span *ngIf="editingId !== item.id">{{ item.guests }}</span>
-        </td>
-
-        <!-- Location -->
-        <td>
-          <input *ngIf="editingId === item.id" [(ngModel)]="item.location" class="inline-input" type="text" />
-          <span *ngIf="editingId !== item.id">{{ item.location }}</span>
-        </td>
-
-        <!-- Booked -->
-        <td>
-          <input type="checkbox"
-                 [checked]="item.booked === 1"
-                 (change)="toggleBooked(item)"
-                 [disabled]="editingId !== item.id" />
-        </td>
-
-        <!-- Image -->
-        <td>
-          <img *ngIf="item.imageName"
-               [src]="'http://localhost/angularapp2/reservationapi/uploads/' + item.imageName"
-               class="reservation-image"
-               alt="Reservation Image" />
-        </td>
-
-        <!-- Actions -->
         <td class="actions">
-          <button *ngIf="editingId !== item.id" (click)="startEditRow(item.id)" class="btn btn-primary btn-sm">Edit</button>
-          <button *ngIf="editingId === item.id" (click)="saveRow(item)" class="btn btn-success btn-sm">Save</button>
-          <button (click)="deleteReservation(item.id)" class="btn btn-danger btn-sm">Delete</button>
+          <button (click)="navigateToEdit(item.id)">Edit</button>
+          <button (click)="deleteReservation(item.id)">Delete</button>
         </td>
       </tr>
     </tbody>
   </table>
-
-  <ng-template #noData>
-    <p>No reservations found.</p>
-  </ng-template>
-
 </div>
