@@ -2,16 +2,18 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { ReservationsService } from '../reservations/reservation.service';
 import { Reservation } from '../reservation';
+import { Auth } from '../services/auth';
 
 @Component({
   selector: 'app-addreservation',
   standalone: true,
   templateUrl: './addreservation.html',
   styleUrls: ['./addreservation.css'],
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule, HttpClientModule],
   providers: [ReservationsService],
 })
 export class AddReservation {
@@ -23,17 +25,19 @@ export class AddReservation {
     guests: 1,
     location: '',
     imageName: '',
-    booked: 0,
+    booked: 1,
   };
 
   success = '';
   error = '';
+  userName = '';
   selectedFile: File | null = null;
  
 
   constructor(
     private reservationService: ReservationsService,
     private router: Router,
+    public authService: Auth,
     private cdr: ChangeDetectorRef 
   ) {}
 
@@ -46,6 +50,8 @@ export class AddReservation {
 
   addReservation(f: NgForm): void {
     this.clearMessages();
+    console.log('Submitting reservation:', this.reservation);
+
     
 
 

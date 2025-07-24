@@ -1,5 +1,10 @@
+<div class="toolbar">
+  <h2>{{ userName }} Add New Reservation</h2>
+  <button (click)="authService.logout()" class="btn btn-sm btn-danger">Logout</button>
+</div>
+
 <div class="container">
-  <h2>Add New Reservation</h2>
+ 
   
   <form #f="ngForm" (ngSubmit)="addReservation(f)" novalidate>
     

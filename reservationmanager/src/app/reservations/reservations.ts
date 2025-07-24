@@ -3,25 +3,29 @@ import { ReservationsService } from '../reservations/reservation.service';
 import { Reservation } from '../reservation';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { RouterModule, Router, NavigationEnd } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { Auth } from '../services/auth';
 
 @Component({
   selector: 'app-reservations',
   standalone: true,
   templateUrl: './reservations.html',
   styleUrls: ['./reservations.css'],
-  imports: [RouterModule, FormsModule, CommonModule],
+  imports: [RouterModule, FormsModule, CommonModule, HttpClientModule],
 })
 export class Reservations implements OnInit, OnDestroy {
   reservations: Reservation[] = [];
   success = '';
   error = '';
+  userName = '';
   private routerSubscription?: Subscription;
 
   constructor(
     private reservationService: ReservationsService,
     private cdr: ChangeDetectorRef,
+    public authService: Auth,
     private router: Router
   ) {}
 

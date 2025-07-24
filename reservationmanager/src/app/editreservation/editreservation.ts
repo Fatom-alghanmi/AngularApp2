@@ -1,18 +1,19 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { NgForm } from '@angular/forms';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { ReservationsService } from '../reservations/reservation.service';
 import { Reservation } from '../reservation';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
+import { Auth } from '../services/auth';
 
 @Component({
   standalone: true,
   selector: 'app-editreservation',
   templateUrl: './editreservation.html',
   styleUrls: ['./editreservation.css'],
-  imports: [RouterModule, FormsModule, CommonModule],
+  imports: [RouterModule, FormsModule, CommonModule, HttpClientModule],
 })
 export class EditReservation implements OnInit {
   reservation: Reservation = {
@@ -23,7 +24,7 @@ export class EditReservation implements OnInit {
     guests: 1,
     location: '',
     imageName: '',
-    booked: 0,
+    booked: 1,
   };
 
   selectedFile: File | null = null;
@@ -32,11 +33,13 @@ export class EditReservation implements OnInit {
 
   success = '';
   error = '';
+  userName = '';
 
   constructor(
     private route: ActivatedRoute,
     private reservationService: ReservationsService,
     private router: Router,
+    public authService: Auth,
     private cdr: ChangeDetectorRef,
     private http: HttpClient
   ) {}

@@ -1,33 +1,17 @@
 <?php
-//header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: POST, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type');
+require 'connect.php';
 header('Content-Type: application/json');
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
-require 'connect.php';
+$id = isset($_POST['id']) ? (int) $_POST['id'] : 0; // unused here but ok
+$booked = isset($_POST['booked']) ? (int)$_POST['booked'] : 0;
 
-// Handle preflight OPTIONS request
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit;
-}
-
-// Only accept POST
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    http_response_code(405);
-    echo json_encode(['error' => 'Only POST allowed']);
-    exit;
-}
-
-// Read data from $_POST
 $name = $_POST['name'] ?? '';
 $date = $_POST['date'] ?? '';
 $time = $_POST['time'] ?? '';
 $guests = isset($_POST['guests']) ? (int)$_POST['guests'] : 0;
 $location = $_POST['location'] ?? '';
-$booked = isset($_POST['booked']) ? (int)$_POST['booked'] : 0;
 $imageName = 'placeholder_100.jpg';  // default placeholder
 
 // Validate required fields
@@ -37,7 +21,7 @@ if (!$name || !$date || !$time || !$guests || !$location) {
     exit;
 }
 
-// Prevent Duplicate Reservation (same name, date, time, guests)
+// Prevent duplicate reservation (same name, date, time, guests)
 $checkSql = "SELECT id FROM reservations WHERE name = ? AND date = ? AND time = ? AND guests = ? LIMIT 1";
 $checkStmt = $con->prepare($checkSql);
 $checkStmt->bind_param("sssi", $name, $date, $time, $guests);
@@ -49,6 +33,22 @@ if ($checkStmt->num_rows > 0) {
     exit;
 }
 $checkStmt->close();
+
+// === New check: Prevent duplicate booked reservation at same location/date/time ===
+if ($booked === 1) {
+    $dupSql = "SELECT id FROM reservations WHERE location = ? AND date = ? AND time = ? AND booked = 1 LIMIT 1";
+    $dupStmt = $con->prepare($dupSql);
+    $dupStmt->bind_param("sss", $location, $date, $time);
+    $dupStmt->execute();
+    $dupStmt->store_result();
+    if ($dupStmt->num_rows > 0) {
+        http_response_code(409);
+        echo json_encode(['error' => 'Another reservation is already booked for this location, date, and time.']);
+        exit;
+    }
+    $dupStmt->close();
+}
+// ======================================================================
 
 // Handle image upload
 if (isset($_FILES['image']) && $_FILES['image']['error'] === 0) {
@@ -93,7 +93,12 @@ if ($stmt->execute()) {
         'imageName' => $imageName
     ]);
 } else {
-    http_response_code(500);
-    echo json_encode(['error' => $stmt->error]);
+    if ($con->errno === 1062) { // Duplicate entry error
+        http_response_code(409);
+        echo json_encode(['error' => 'Duplicate booking: location, date, and time already booked']);
+    } else {
+        http_response_code(500);
+        echo json_encode(['error' => $stmt->error]);
+    }
 }
 ?>
