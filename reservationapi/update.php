@@ -62,14 +62,44 @@ if ($booked === 1) {
     $stmt2->close();
 }
 
-// Perform the update
+// Handle image upload if new image is provided
+$newImageName = $_POST['oldImageName'] ?? ''; // default to old image
+
+if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+    $uploadDir = 'uploads/';
+    $originalName = basename($_FILES['image']['name']);
+    $extension = pathinfo($originalName, PATHINFO_EXTENSION);
+    $baseName = pathinfo($originalName, PATHINFO_FILENAME);
+
+    $newImageName = $originalName;
+    $counter = 1;
+    while (file_exists($uploadDir . $newImageName)) {
+        $newImageName = $baseName . '_' . $counter . '.' . $extension;
+        $counter++;
+    }
+
+    $targetPath = $uploadDir . $newImageName;
+
+    if (!move_uploaded_file($_FILES['image']['tmp_name'], $targetPath)) {
+        http_response_code(500);
+        echo json_encode(['error' => 'Failed to upload new image']);
+        exit;
+    }
+
+    // Delete old image if it’s not placeholder and different
+    $oldImageName = $_POST['oldImageName'] ?? '';
+    if ($oldImageName && $oldImageName !== 'placeholder.jpg' && $oldImageName !== $newImageName && file_exists($uploadDir . $oldImageName)) {
+        unlink($uploadDir . $oldImageName);
+    }
+}
+
 $updateSql = "UPDATE reservations 
-              SET name = ?, date = ?, time = ?, guests = ?, location = ?, booked = ? 
+              SET name = ?, date = ?, time = ?, guests = ?, location = ?, booked = ?, imageName = ? 
               WHERE id = ? 
               LIMIT 1";
 
 $updateStmt = $con->prepare($updateSql);
-$updateStmt->bind_param("sssisii", $name, $date, $time, $guests, $location, $booked, $id);
+$updateStmt->bind_param("sssisisi", $name, $date, $time, $guests, $location, $booked, $newImageName, $id);
 
 if ($updateStmt->execute()) {
     echo json_encode(['message' => 'Reservation updated successfully']);

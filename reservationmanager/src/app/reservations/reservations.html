@@ -8,8 +8,19 @@
   <button (click)="navigateToAdd()">Add Reservation</button>
 </div>
 
-<div class="table-container">
-  <!-- your table here -->
+<div class="filter-bar" style="margin-bottom: 1rem;">
+  <input
+    type="text"
+    placeholder="Search by name..."
+    [(ngModel)]="searchTerm"
+    (input)="onSearchTermChange()"
+    style="margin-right: 1rem;"
+  />
+
+  <select [(ngModel)]="filterLocation" (change)="onLocationChange()">
+    <option value="">All Locations</option>
+    <option *ngFor="let loc of locations" [value]="loc">{{ loc }}</option>
+  </select>
 </div>
 
 <div class="table-container">
@@ -27,7 +38,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let item of reservations">
+      <tr *ngFor="let item of filteredReservations">
         <td>{{ item.name }}</td>
         <td>{{ item.date }}</td>
         <td>{{ item.time }}</td>
@@ -38,10 +49,13 @@
             type="checkbox"
             [checked]="item.booked == 1"
             (change)="toggleBooked(item)"
-            />
+          />
         </td>
         <td>
-          <img [src]="'http://localhost/angularapp2/reservationapi/uploads/' + item.imageName" alt="Image" />
+          <img
+            [src]="'http://localhost/angularapp2/reservationapi/uploads/' + item.imageName"
+            alt="Image"
+          />
         </td>
         <td class="actions">
           <button (click)="navigateToEdit(item.id)">Edit</button>

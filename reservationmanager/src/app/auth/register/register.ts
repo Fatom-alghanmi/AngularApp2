@@ -1,72 +1,69 @@
 import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
-import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
 import { Auth } from '../../services/auth';
-import { ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
+import { ChangeDetectorRef } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { HttpClientModule } from '@angular/common/http';
+import { RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-register',
-  standalone: true,
-  imports: [CommonModule, FormsModule, HttpClientModule, RouterModule],
+  imports: [HttpClientModule, CommonModule, FormsModule, RouterModule],
   templateUrl: './register.html',
-  styleUrls: ['./register.css']
+  styleUrl: './register.css'
 })
 export class Register {
   userName = '';
-  emailAddress = '';
   password = '';
-  message = '';
+  confirmPassword = '';
+  emailAddress = '';
   errorMessage = '';
   successMessage = '';
-  loading = false;
 
-  constructor(public http: HttpClient, private router: Router,  private cdr: ChangeDetectorRef) {}
-
-  clearMessages() {
-    this.errorMessage = '';
-    this.successMessage = '';
-  }
+  constructor(private auth: Auth, private router: Router, private cdr: ChangeDetectorRef) {}
 
   register() {
-    if (this.loading) return;
-  
-    // Your validation here...
-  
-    this.loading = true;
-    this.errorMessage = '';
-    this.successMessage = '';
-    this.cdr.detectChanges();  // Update UI immediately for clearing messages
-  
-    this.http.post<any>('http://localhost/AngularApp2/reservationapi/register.php', {
-      userName: this.userName.trim(),
-      emailAddress: this.emailAddress.trim(),
-      password: this.password.trim()
-    }, {
-      withCredentials: true
+    const trimmedUsername = this.userName.trim();
+    const trimmedPassword = this.password.trim();
+    const trimmedConfirm = this.confirmPassword.trim();
+    const trimmedEmail = this.emailAddress.trim();
+
+    if (!trimmedUsername || !trimmedPassword || !trimmedConfirm || !trimmedEmail) {
+      this.errorMessage = 'All fields are required.';
+      this.successMessage = '';
+      return;
+    }
+
+    if (trimmedPassword !== trimmedConfirm) {
+      this.errorMessage = 'Passwords do not match.';
+      this.successMessage = '';
+      return;
+    }
+
+    this.auth.register({
+      userName: trimmedUsername,
+      password: trimmedPassword,
+      emailAddress: trimmedEmail
     }).subscribe({
       next: res => {
-        this.loading = false;
         if (res.success) {
-          this.successMessage = res.message || 'Registration successful.';
+          this.successMessage = 'Registration successful. Please log in.';
           this.errorMessage = '';
           this.cdr.detectChanges();
-          setTimeout(() => this.router.navigate(['/login']), 500);
+          setTimeout(() => this.router.navigate(['/login']), 1500);
         } else {
-          this.errorMessage = res.message || 'Registration failed.';
+          this.errorMessage = res.message;
           this.successMessage = '';
-          this.cdr.detectChanges();
         }
       },
       error: err => {
-        this.loading = false;
-        this.errorMessage = 'A network or server error occurred.';
+        this.errorMessage = err?.error?.message || 'Server error during registration.';
         this.successMessage = '';
         this.cdr.detectChanges();
       }
     });
+   
   }
-  
 }
+

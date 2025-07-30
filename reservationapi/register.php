@@ -58,5 +58,5 @@ if ($insert->execute()) {
     echo json_encode(['success' => true, 'message' => 'User registered successfully']);
 } else {
     http_response_code(500);
-    echo json_encode(['success' => false, 'message' => 'Error during registration']);
+    echo json_encode(['success' => false, 'message' => 'Username already exists']);
 }

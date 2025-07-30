@@ -16,10 +16,12 @@ import { Router } from '@angular/router';
 export class Login {
   userName = '';
   password = '';
-  message = '';
   errorMessage = '';
   successMessage = '';
   loading = false;
+
+  lockoutRemaining = 0;
+  private lockoutTimer: any = null;
 
   constructor(public http: HttpClient, private router: Router, private cdr: ChangeDetectorRef) {}
 
@@ -28,23 +30,47 @@ export class Login {
     this.successMessage = '';
   }
 
+  startLockoutTimer(seconds: number) {
+    this.lockoutRemaining = seconds;
+    this.cdr.detectChanges();
+
+    if (this.lockoutTimer) {
+      clearInterval(this.lockoutTimer);
+    }
+
+    this.lockoutTimer = setInterval(() => {
+      this.lockoutRemaining--;
+      this.cdr.detectChanges();
+
+      if (this.lockoutRemaining <= 0) {
+        clearInterval(this.lockoutTimer);
+        this.lockoutTimer = null;
+      }
+    }, 1000);
+  }
+
   login() {
     if (this.loading) return;
-  
+    if (this.lockoutRemaining > 0) {
+      this.errorMessage = `Too many failed attempts. Please wait ${this.lockoutRemaining} seconds before retrying.`;
+      this.successMessage = '';
+      return;
+    }
+
     const username = this.userName.trim();
     const password = this.password.trim();
-  
+
     if (!username || !password) {
       this.errorMessage = 'Please enter both username and password.';
       this.successMessage = '';
       return;
     }
-  
+
     this.loading = true;
-    this.errorMessage = 'Logging in...';  // Show processing message
+    this.errorMessage = 'Logging in...';
     this.successMessage = '';
-    this.cdr.detectChanges(); // ensure UI updates immediately
-  
+    this.cdr.detectChanges();
+
     this.http.post<any>('http://localhost/AngularApp2/reservationapi/login.php', {
       userName: username,
       password: password
@@ -53,23 +79,36 @@ export class Login {
     }).subscribe({
       next: res => {
         this.loading = false;
+
         if (res.success) {
           this.successMessage = res.message || 'Login successful.';
           this.errorMessage = '';
+          this.lockoutRemaining = 0;
+          if (this.lockoutTimer) {
+            clearInterval(this.lockoutTimer);
+            this.lockoutTimer = null;
+          }
           this.cdr.detectChanges();
           setTimeout(() => this.router.navigate(['/']), 800);
         } else {
-          // Unexpected path if backend uses HTTP errors properly
           this.errorMessage = res.message || 'Invalid username or password.';
           this.successMessage = '';
+
+          if (res.lockout && res.remainingSeconds) {
+            this.startLockoutTimer(res.remainingSeconds);
+          }
+
           this.cdr.detectChanges();
         }
       },
       error: err => {
-        console.log('Login error:', err);
         this.loading = false;
-  
-        if (err.status === 401) {
+        this.successMessage = '';
+
+        if (err.status === 429 && err.error?.remainingSeconds) {
+          this.errorMessage = err.error.message || 'Too many failed attempts. Please wait.';
+          this.startLockoutTimer(err.error.remainingSeconds);
+        } else if (err.status === 401) {
           this.errorMessage = 'Invalid username or password.';
         } else if (err.status === 404) {
           this.errorMessage = 'User not found.';
@@ -85,11 +124,9 @@ export class Login {
         } else {
           this.errorMessage = 'An unexpected error occurred.';
         }
-  
-        this.successMessage = '';
-        this.cdr.detectChanges();  // force UI update after error
+
+        this.cdr.detectChanges();
       }
     });
   }
-  
 }

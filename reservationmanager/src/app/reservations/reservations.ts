@@ -17,10 +17,15 @@ import { Auth } from '../services/auth';
 })
 export class Reservations implements OnInit, OnDestroy {
   reservations: Reservation[] = [];
+  filteredReservations: Reservation[] = [];
   success = '';
   error = '';
   userName = '';
   private routerSubscription?: Subscription;
+
+  searchTerm: string = '';
+  filterLocation: string = '';
+  locations: string[] = [];
 
   constructor(
     private reservationService: ReservationsService,
@@ -49,6 +54,8 @@ export class Reservations implements OnInit, OnDestroy {
     this.reservationService.getAll().subscribe({
       next: (res) => {
         this.reservations = res.data;
+        this.extractLocations();
+        this.applyFilters();
         this.showSuccess('Reservations loaded successfully');
         this.cdr.detectChanges();
       },
@@ -57,6 +64,38 @@ export class Reservations implements OnInit, OnDestroy {
         console.error(err);
       },
     });
+  }
+
+  extractLocations(): void {
+    const locSet = new Set<string>();
+    this.reservations.forEach(res => {
+      if (res.location) {
+        locSet.add(res.location);
+      }
+    });
+    this.locations = Array.from(locSet).sort();
+  }
+
+  applyFilters(): void {
+    this.filteredReservations = this.reservations.filter(res => {
+      const matchesSearch = this.searchTerm
+        ? res.name.toLowerCase().includes(this.searchTerm.toLowerCase())
+        : true;
+
+      const matchesLocation = this.filterLocation
+        ? res.location === this.filterLocation
+        : true;
+
+      return matchesSearch && matchesLocation;
+    });
+  }
+
+  onSearchTermChange(): void {
+    this.applyFilters();
+  }
+
+  onLocationChange(): void {
+    this.applyFilters();
   }
 
   deleteReservation(id: number): void {
@@ -69,6 +108,7 @@ export class Reservations implements OnInit, OnDestroy {
     this.reservationService.delete(id).subscribe({
       next: () => {
         this.reservations = this.reservations.filter(item => item.id !== id);
+        this.applyFilters();
         this.showSuccess("Reservation deleted successfully");
         this.cdr.detectChanges();
       },
@@ -91,7 +131,6 @@ export class Reservations implements OnInit, OnDestroy {
     this.router.navigate(['/about']);
   }
 
-  /** Show success message with auto-hide */
   showSuccess(message: string): void {
     this.success = message;
     setTimeout(() => {
@@ -100,7 +139,6 @@ export class Reservations implements OnInit, OnDestroy {
     }, 2000);
   }
 
-  /** Show error message with auto-hide */
   showError(message: string): void {
     this.error = message;
     setTimeout(() => {
@@ -112,11 +150,11 @@ export class Reservations implements OnInit, OnDestroy {
   toggleBooked(item: Reservation): void {
     const newStatus = item.booked === 1 ? 0 : 1;
     item.booked = newStatus; // Optimistic UI update
-  
+
     const formData = new FormData();
     formData.append('id', item.id.toString());
     formData.append('booked', newStatus.toString());
-  
+
     this.reservationService.updateBookedStatus(formData).subscribe({
       next: () => {
         this.showSuccess('Booked status updated');
@@ -129,5 +167,4 @@ export class Reservations implements OnInit, OnDestroy {
       }
     });
   }
-  
 }
